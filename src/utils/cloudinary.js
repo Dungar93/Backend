@@ -19,8 +19,10 @@ import fs from "fs"
 
             })
             // file has been successfully uploaded 
-            console.log("file is uploaded successfully ",response.url);
+            fs.unlinkSync(localFilePath)
+            //console.log("file is uploaded successfully ",response.url);
             return response;
+
 
             
         } catch (error) {

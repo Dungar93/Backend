@@ -18,14 +18,17 @@ const registerUser  = asyncHandler(async (req,res) =>{
 
 
    const {fullname ,email,username ,password}=req.body  
-   console.log("email",email)
+    // console.log("req.body:", req.body);
+//   console.log("req.files:", req.files);
+//    console.log("email",email)
+
    if (
     [fullname,email,username,password].some((field) =>field?.trim() === "")
    ) {
     throw new ApiError(400,"All fiels are compulsory")
     
    }
-  const existdUser =  User.findOne({
+  const existdUser = await User.findOne({
         $or : [{username},{email}]
     })
     if (existdUser){
@@ -45,13 +48,15 @@ if (!avatar){
      throw new ApiError(400,"Please upload the avatar file this is the necessary for the register into this app")
 
 }
+
+
 const user  = await User.create({
     fullname,
     avatar : avatar.url,
     coverImage: coverImage?.url ||"",  
     email,
     password,
-    username: username.toLowerCase()
+   username: username.toLowerCase()
 })
 const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
