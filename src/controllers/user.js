@@ -455,5 +455,6 @@ return res
 export {registerUser,
     loginUser,  logoutUser,refreshAccessToken,
     changeUserPassword,getCurrentUser,updateAccountDetails,
-    updateUserAvatar,updateUserCoverImage
+    updateUserAvatar,updateUserCoverImage,
+    getUserChannelProfile
 }
