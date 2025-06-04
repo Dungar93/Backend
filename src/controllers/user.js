@@ -237,7 +237,7 @@ const changeUserPassword  =asyncHandler(async (req,res ) =>{
 const getCurrentUser = asyncHandler(async(req,res) =>{
     return res
     .status(200)
-    .json(200,req.user,"current user fetched successfully")
+    .json(new ApiResponse(200,req.user,"current user fetched successfully"))
 })
 
 
@@ -247,7 +247,7 @@ const updateAccountDetails  =  asyncHandler(async(req,res)=>{
     if (!fullname || !email){
         throw new ApiError(400 ," all fields are required")
     }
-    const user  =User.findByIdAndUpdate(req.user?._id,
+    const user  = await User.findByIdAndUpdate(req.user?._id,
         {
             $set :{
                 fullname,
@@ -277,6 +277,17 @@ if (!avatar.url){
 throw new ApiError(400, " there is no url for this avatar please check again for this ")
 
 }
+// 🧠 Step 1: Find the user first to get current avatar URL
+    const currentUser = await User.findById(req.user?._id);
+    const oldAvatarUrl = currentUser?.avatar;
+
+    // 🧹 Step 2: Extract Cloudinary public_id and delete old image
+    if (oldAvatarUrl) {
+        const publicId = getCloudinaryPublicId(oldAvatarUrl);
+        if (publicId) {
+            await cloudinary.uploader.destroy(publicId);
+        }
+    }
 
 
 const user  = await User.findByIdAndUpdate(
@@ -307,6 +318,19 @@ if (!coverImage.url){
 throw new ApiError(400, " there is no url for this avatar please check again for this ")
 
 }
+
+ // 🧠 Step 1: Find the user first to get current coverImage URL
+    const currentUser = await User.findById(req.user?._id);
+    const oldCoverImageUrl = currentUser?.coverImage;
+
+    // 🧹 Step 2: Extract Cloudinary public_id and delete old image
+    if (oldCoverImageUrl) {
+        const publicId = getCloudinaryPublicId(oldCoverImageUrl);
+        if (publicId) {
+            await cloudinary.uploader.destroy(publicId);
+        }
+    }
+
 
 
 const user = await User.findByIdAndUpdate(
